@@ -10,7 +10,6 @@ from cropharvest.datasets import Task
 from cropharvest.engineer import TestInstance
 from cropharvest.utils import extract_archive
 from google.cloud import storage
-from openmapflow.utils import memoized
 from sklearn.base import BaseEstimator
 from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
@@ -34,7 +33,6 @@ from .cropharvest_extensions import (
 from .eval import EvalTask, Hyperparams
 
 
-@memoized
 def get_eval_datasets(
     normalize: bool = False, ignore_dynamic_world: bool = False, start_month: int = 1
 ):

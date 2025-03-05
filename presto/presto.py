@@ -34,7 +34,8 @@ class Attention(nn.Module):
         self.num_heads = num_heads
         self.head_dim = dim // num_heads
         self.scale = self.head_dim**-0.5
-        self.fast_attn = hasattr(torch.nn.functional, "scaled_dot_product_attention")  # FIXME
+        # Removing for TorchServe
+        # self.fast_attn = hasattr(torch.nn.functional, "scaled_dot_product_attention")  # FIXME
 
         self.qkv = nn.Linear(dim, dim * 3, bias=qkv_bias)
         self.q_norm = norm_layer(self.head_dim) if qk_norm else nn.Identity()
@@ -49,25 +50,27 @@ class Attention(nn.Module):
         q, k, v = qkv.unbind(0)
         q, k = self.q_norm(q), self.k_norm(k)
 
-        if self.fast_attn:
-            if attn_mask is not None:
-                attn_mask = attn_mask[:, None, None].repeat((1, self.num_heads, N, 1))
-            x = F.scaled_dot_product_attention(
-                q,
-                k,
-                v,
-                # a value of True indicates that the element should take part in attention
-                attn_mask=attn_mask,
-                dropout_p=self.attn_drop.p,
-            )
-        else:
-            if attn_mask is not None:
-                raise NotImplementedError
-            q = q * self.scale
-            attn = q @ k.transpose(-2, -1)
-            attn = attn.softmax(dim=-1)
-            attn = self.attn_drop(attn)
-            x = attn @ v
+        # Removing for torchserve
+        # if self.fast_attn:
+        #     if attn_mask is not None:
+        #         attn_mask = attn_mask[:, None, None].repeat((1, self.num_heads, N, 1))
+        #     x = F.scaled_dot_product_attention(
+        #         q,
+        #         k,
+        #         v,
+        #         # a value of True indicates that the element should take part in attention
+        #         attn_mask=attn_mask,
+        #         dropout_p=self.attn_drop.p,
+        #     )
+        # else:
+        
+        if attn_mask is not None:
+            raise NotImplementedError
+        q = q * self.scale
+        attn = q @ k.transpose(-2, -1)
+        attn = attn.softmax(dim=-1)
+        attn = self.attn_drop(attn)
+        x = attn @ v
 
         x = x.transpose(1, 2).reshape(B, N, C)
         x = self.proj(x)

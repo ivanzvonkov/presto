@@ -197,23 +197,23 @@ def get_month_encoding_table(d_hid):
 
 
 def month_to_tensor(month: Union[torch.Tensor, int], batch_size: int, seq_len: int):
-    if isinstance(month, int):
-        assert cast(int, month) < 12
-    else:
-        assert max(cast(torch.Tensor, month.flatten())) < 12
+    # if isinstance(month, int):
+    #     assert cast(int, month) < 12
+    # else:
+    #     assert max(cast(torch.Tensor, month.flatten())) < 12
 
-    if isinstance(month, int):
-        # >>> torch.fmod(torch.tensor([9., 10, 11, 12, 13, 14]), 12)
-        # tensor([ 9., 10., 11.,  0.,  1.,  2.])
-        month = (
-            torch.fmod(torch.arange(month, month + seq_len, dtype=torch.long), 12)
-            .expand(batch_size, seq_len)
-            .to(device)
-        )
-    elif len(month.shape) == 1:
-        month = torch.stack(
-            [torch.fmod(torch.arange(m, m + seq_len, dtype=torch.long), 12) for m in month]
-        ).to(device)
+    # if isinstance(month, int):
+    #     # >>> torch.fmod(torch.tensor([9., 10, 11, 12, 13, 14]), 12)
+    #     # tensor([ 9., 10., 11.,  0.,  1.,  2.])
+    #     month = (
+    #         torch.fmod(torch.arange(month, month + seq_len, dtype=torch.long), 12)
+    #         .expand(batch_size, seq_len)
+    #         .to(device)
+    #     )
+    # elif len(month.shape) == 1:
+    month = torch.stack(
+        [torch.fmod(torch.arange(m, m + seq_len, dtype=torch.long), 12) for m in month]
+    ).to(device)
     return month
 
 

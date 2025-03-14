@@ -211,9 +211,9 @@ def month_to_tensor(month: Union[torch.Tensor, int], batch_size: int, seq_len: i
     #         .to(device)
     #     )
     # elif len(month.shape) == 1:
-    month = torch.stack(
-        [torch.fmod(torch.arange(m, m + seq_len, dtype=torch.long), 12) for m in month]
-    ).to(device)
+        # month = torch.stack(
+        #     [torch.fmod(torch.arange(m, m + seq_len, dtype=torch.long), 12) for m in month]
+        # ).to(device)
     return month
 
 
